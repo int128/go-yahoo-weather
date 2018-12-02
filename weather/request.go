@@ -7,12 +7,6 @@ import (
 	"time"
 )
 
-// Coordinates represents a coordinates in WGS84.
-type Coordinates struct {
-	Latitude  float64
-	Longitude float64
-}
-
 // Request represents a request for Weather API.
 type Request struct {
 	Coordinates     []Coordinates // list of coordinates, up to 10 (required)
@@ -31,7 +25,7 @@ func (r *Request) Values() url.Values {
 	}
 	v.Set("coordinates", strings.Join(s, " "))
 	if !r.DateTime.IsZero() {
-		s := r.DateTime.Format("200601021504")
+		s := r.DateTime.In(Timezone).Format("200601021504")
 		v.Set("date", s)
 	}
 	if r.PastHours != 0 {

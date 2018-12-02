@@ -40,4 +40,7 @@ func TestDateString_Parse(t *testing.T) {
 	if want := 10; d.Minute() != want {
 		t.Errorf("Minute wants %d but %d", want, d.Minute())
 	}
+	if _, offset := d.Zone(); offset != 9*60*60 {
+		t.Errorf("Zone offset wants %d but %d", 9*60*60, offset)
+	}
 }

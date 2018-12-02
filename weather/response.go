@@ -73,5 +73,5 @@ type DateString string
 
 // Parse returns a time.Time corresponding to the string.
 func (t DateString) Parse() (time.Time, error) {
-	return time.Parse("200601021504", string(t))
+	return time.ParseInLocation("200601021504", string(t), Timezone)
 }

@@ -48,12 +48,23 @@ func TestRequest_Values_MultiCoordinates(t *testing.T) {
 	}
 }
 
-func TestRequest_Values_DateTime(t *testing.T) {
+func TestRequest_Values_DateTime_JST(t *testing.T) {
+	r := Request{
+		DateTime: time.Date(2018, 11, 30, 12, 34, 56, 0, Timezone),
+	}
+	s := r.Values().Encode()
+	w := "coordinates=&date=201811301234&output=json"
+	if w != s {
+		t.Errorf("Values wants %s but %s", w, s)
+	}
+}
+
+func TestRequest_Values_DateTime_UTC(t *testing.T) {
 	r := Request{
 		DateTime: time.Date(2018, 11, 30, 12, 34, 56, 0, time.UTC),
 	}
 	s := r.Values().Encode()
-	w := "coordinates=&date=201811301234&output=json"
+	w := "coordinates=&date=201811302134&output=json"
 	if w != s {
 		t.Errorf("Values wants %s but %s", w, s)
 	}
