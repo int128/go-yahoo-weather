@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func ExampleNewClient() {
+func ExampleClient_Get() {
 	c := weather.NewClient(os.Getenv("YAHOO_CLIENT_ID"))
 	resp, err := c.Get(&weather.Request{
 		Coordinates: []weather.Coordinates{

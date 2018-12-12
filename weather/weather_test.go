@@ -3,9 +3,28 @@ package weather_test
 import (
 	"encoding/json"
 	"github.com/int128/go-yahoo-weather/weather"
+	"log"
+	"os"
 	"testing"
 	"time"
 )
+
+func ExampleParse() {
+	c := weather.NewClient(os.Getenv("YAHOO_CLIENT_ID"))
+	resp, err := c.Get(&weather.Request{
+		Coordinates: []weather.Coordinates{
+			{Latitude: 35.663613, Longitude: 139.732293},
+		},
+	})
+	if err != nil {
+		log.Fatalf("Error while getting weather: %s", err)
+	}
+	weathers, err := weather.Parse(resp)
+	if err != nil {
+		log.Fatalf("Error while parsing weather response: %s", err)
+	}
+	log.Printf("Weathers: %+v", weathers)
+}
 
 func TestParse(t *testing.T) {
 	var resp weather.Response
