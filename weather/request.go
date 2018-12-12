@@ -36,3 +36,10 @@ func (r *Request) Values() url.Values {
 	}
 	return v
 }
+
+// QueryString returns the query string.
+// Note that spaces need to encoded as %20 instead of +.
+func (r *Request) QueryString() string {
+	q := r.Values().Encode()
+	return strings.Replace(q, "+", "%20", -1)
+}

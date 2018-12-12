@@ -30,7 +30,7 @@ func (c *Client) Get(req *Request) (*Response, error) {
 		endpoint = Endpoint
 	}
 
-	q := req.Values().Encode()
+	q := req.QueryString()
 	hreq, err := http.NewRequest("GET", endpoint+"?"+q, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating a HTTP request: %s", err)
