@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/int128/go-yahoo-weather/weather"
 	"log"
 	"net/http"
@@ -9,9 +10,8 @@ import (
 )
 
 func main() {
-	hc := http.Client{Transport: &loggingTransport{}}
 	c := weather.NewClient(os.Getenv("YAHOO_CLIENT_ID"))
-	c.Client = &hc
+	c.Client = &http.Client{Transport: &loggingTransport{}}
 
 	req := weather.Request{
 		Coordinates: []weather.Coordinates{
@@ -19,12 +19,24 @@ func main() {
 			{Latitude: 41.7686738, Longitude: 140.728924}, // Hakodate
 		},
 	}
-	log.Printf("Request: %+v", req)
 	resp, err := c.Get(&req)
 	if err != nil {
 		log.Fatalf("Could not get weather: %s", err)
 	}
-	log.Printf("Response: %+v", resp)
+	weathers, err := weather.Parse(resp)
+	if err != nil {
+		log.Fatalf("Could not parse weather response: %s", err)
+	}
+	for i, w := range weathers {
+		fmt.Printf("Weather #%d at (%f,%f)\n", i, w.Coordinates.Latitude, w.Coordinates.Longitude)
+		for _, e := range w.Events {
+			forecastMark := " "
+			if e.Forecast {
+				forecastMark = "*"
+			}
+			fmt.Printf("| %s %s | %5.2f mm/h |\n", e.Time.Format("15:04"), forecastMark, e.Rainfall)
+		}
+	}
 }
 
 type loggingTransport struct{}
