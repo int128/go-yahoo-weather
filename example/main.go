@@ -8,24 +8,6 @@ import (
 	"os"
 )
 
-type loggingTransport struct{}
-
-func (t *loggingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	dump, err := httputil.DumpRequestOut(req, true)
-	if err == nil {
-		log.Printf("REQUEST:\n%s", string(dump))
-	}
-	resp, err := http.DefaultTransport.RoundTrip(req)
-	if err != nil {
-		return resp, err
-	}
-	dump, err = httputil.DumpResponse(resp, true)
-	if err == nil {
-		log.Printf("RESPONSE:\n%s", string(dump))
-	}
-	return resp, nil
-}
-
 func main() {
 	hc := http.Client{Transport: &loggingTransport{}}
 	c := weather.NewClient(os.Getenv("YAHOO_CLIENT_ID"))
@@ -43,4 +25,22 @@ func main() {
 		log.Fatalf("Could not get weather: %s", err)
 	}
 	log.Printf("Response: %+v", resp)
+}
+
+type loggingTransport struct{}
+
+func (t *loggingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	dump, err := httputil.DumpRequestOut(req, true)
+	if err == nil {
+		log.Printf("REQUEST:\n%s", string(dump))
+	}
+	resp, err := http.DefaultTransport.RoundTrip(req)
+	if err != nil {
+		return resp, err
+	}
+	dump, err = httputil.DumpResponse(resp, true)
+	if err == nil {
+		log.Printf("RESPONSE:\n%s", string(dump))
+	}
+	return resp, nil
 }
