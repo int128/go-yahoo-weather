@@ -2,7 +2,9 @@ package weather_test
 
 import (
 	"encoding/json"
+	"github.com/go-test/deep"
 	"github.com/int128/go-yahoo-weather/weather"
+	"github.com/int128/go-yahoo-weather/weather/testdata"
 	"log"
 	"os"
 	"testing"
@@ -28,40 +30,39 @@ func ExampleParse() {
 
 func TestParse(t *testing.T) {
 	var resp weather.Response
-	if err := json.Unmarshal([]byte(weatherResponseJSON), &resp.Body); err != nil {
+	if err := json.Unmarshal([]byte(testdata.WeatherResponseJSON), &resp.Body); err != nil {
 		t.Fatalf("error while decoding JSON: %s", err)
 	}
-
 	weathers, err := weather.Parse(&resp)
 	if err != nil {
 		t.Fatalf("Parse returned error: %s", err)
 	}
-	if len(weathers) != 2 {
-		t.Errorf("len wants 2 but %d", len(weathers))
+	want := []weather.Weather{
+		{
+			Coordinates: weather.Coordinates{Latitude: 35.663613, Longitude: 139.73229},
+			Events: []weather.Event{
+				{Time: time.Date(2018, 12, 12, 13, 5, 0, 0, weather.Timezone)},
+				{Time: time.Date(2018, 12, 12, 13, 15, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 13, 25, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 13, 35, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 13, 45, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 13, 55, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 14, 5, 0, 0, weather.Timezone), Forecast: true},
+			},
+		}, {
+			Coordinates: weather.Coordinates{Latitude: 41.768674, Longitude: 140.72892},
+			Events: []weather.Event{
+				{Time: time.Date(2018, 12, 12, 13, 5, 0, 0, weather.Timezone), Rainfall: 0.35},
+				{Time: time.Date(2018, 12, 12, 13, 15, 0, 0, weather.Timezone), Forecast: true, Rainfall: 0.45},
+				{Time: time.Date(2018, 12, 12, 13, 25, 0, 0, weather.Timezone), Forecast: true, Rainfall: 1.15},
+				{Time: time.Date(2018, 12, 12, 13, 35, 0, 0, weather.Timezone), Forecast: true, Rainfall: 0.45},
+				{Time: time.Date(2018, 12, 12, 13, 45, 0, 0, weather.Timezone), Forecast: true, Rainfall: 1.85},
+				{Time: time.Date(2018, 12, 12, 13, 55, 0, 0, weather.Timezone), Forecast: true},
+				{Time: time.Date(2018, 12, 12, 14, 5, 0, 0, weather.Timezone), Forecast: true},
+			},
+		},
 	}
-
-	w := weathers[0]
-	if want := 35.663613; w.Coordinates.Latitude != want {
-		t.Errorf("Latitude wants %f but %f", want, w.Coordinates.Latitude)
-	}
-	if want := 139.73229; w.Coordinates.Longitude != want {
-		t.Errorf("Longitude wants %f but %f", want, w.Coordinates.Longitude)
-	}
-	if len(w.Events) != 7 {
-		t.Errorf("len(Events) wants 7 but %d", len(w.Events))
-	}
-
-	e := w.Events[6]
-	if want := time.Date(2018, 12, 12, 14, 5, 0, 0, weather.Timezone); !e.Time.Equal(want) {
-		t.Errorf("Time wants %s but %s", want, e.Time)
-	}
-	if !e.Forecast {
-		t.Errorf("Forecast wants true but false")
-	}
-
-	w = weathers[1]
-	e = w.Events[0]
-	if e.Rainfall != 0.35 {
-		t.Errorf("Rainfall wants 0.35 but %f", e.Rainfall)
+	if diff := deep.Equal(want, weathers); diff != nil {
+		t.Error(diff)
 	}
 }
