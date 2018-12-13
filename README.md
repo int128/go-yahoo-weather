@@ -1,15 +1,13 @@
 # go-yahoo-weather [![GoDoc](https://godoc.org/github.com/int128/go-yahoo-weather/weather?status.svg)](https://godoc.org/github.com/int128/go-yahoo-weather/weather) [![CircleCI](https://circleci.com/gh/int128/go-yahoo-weather.svg?style=shield)](https://circleci.com/gh/int128/go-yahoo-weather) [![codecov](https://codecov.io/gh/int128/go-yahoo-weather/branch/master/graph/badge.svg)](https://codecov.io/gh/int128/go-yahoo-weather)
 
-This is a Go package for [Yahoo Japan Weather API](https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/weather.html).
+This is a [Yahoo Japan Weather API](https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/weather.html) Client for Go language.
+
+You need to get an API Client ID on [Yahoo Japan Developers Network](https://developer.yahoo.co.jp).
 
 See [GoDoc](https://godoc.org/github.com/int128/go-yahoo-weather/weather).
 
 
-## Getting Started
-
-You need to get a Client ID on [Yahoo Japan Developers Network](https://developer.yahoo.co.jp).
-
-You can get weather observation and forecast as follows:
+## Examples
 
 ```go
 package main
