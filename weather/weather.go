@@ -42,6 +42,7 @@ func Parse(resp *Response) ([]Weather, error) {
 		for _, respWeather := range respFeature.Property.WeatherList.Weather {
 			var event Event
 
+			event.Rainfall = respWeather.Rainfall
 			event.Time, err = respWeather.Date.Parse()
 			if err != nil {
 				return nil, fmt.Errorf("invalid date: %s", err)

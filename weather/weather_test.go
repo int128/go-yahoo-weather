@@ -58,4 +58,10 @@ func TestParse(t *testing.T) {
 	if !e.Forecast {
 		t.Errorf("Forecast wants true but false")
 	}
+
+	w = weathers[1]
+	e = w.Events[0]
+	if e.Rainfall != 0.35 {
+		t.Errorf("Rainfall wants 0.35 but %f", e.Rainfall)
+	}
 }
