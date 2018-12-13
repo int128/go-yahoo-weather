@@ -1,4 +1,4 @@
-# go-yahoo-weather [![GoDoc](https://godoc.org/github.com/int128/go-yahoo-weather/weather?status.svg)](https://godoc.org/github.com/int128/go-yahoo-weather/weather) [![CircleCI](https://circleci.com/gh/int128/go-yahoo-weather.svg?style=shield)](https://circleci.com/gh/int128/go-yahoo-weather)
+# go-yahoo-weather [![GoDoc](https://godoc.org/github.com/int128/go-yahoo-weather/weather?status.svg)](https://godoc.org/github.com/int128/go-yahoo-weather/weather) [![CircleCI](https://circleci.com/gh/int128/go-yahoo-weather.svg?style=shield)](https://circleci.com/gh/int128/go-yahoo-weather) [![codecov](https://codecov.io/gh/int128/go-yahoo-weather/branch/master/graph/badge.svg)](https://codecov.io/gh/int128/go-yahoo-weather)
 
 This is a Go package for [Yahoo Japan Weather API](https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/weather.html).
 
