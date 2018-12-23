@@ -2,13 +2,14 @@ package weather_test
 
 import (
 	"encoding/json"
-	"github.com/go-test/deep"
-	"github.com/int128/go-yahoo-weather/weather"
-	"github.com/int128/go-yahoo-weather/weather/testdata"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/go-test/deep"
+	"github.com/int128/go-yahoo-weather/weather"
+	"github.com/int128/go-yahoo-weather/weather/testdata"
 )
 
 func ExampleParse() {

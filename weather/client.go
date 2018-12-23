@@ -5,8 +5,9 @@ package weather
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 var Endpoint = "https://map.yahooapis.jp/weather/V1/place"
@@ -33,7 +34,7 @@ func (c *Client) Get(req *Request) (*Response, error) {
 	q := req.QueryString()
 	hreq, err := http.NewRequest("GET", endpoint+"?"+q, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error while creating a HTTP request: %s", err)
+		return nil, errors.Wrapf(err, "error while creating a HTTP request")
 	}
 	hreq.Header.Set("user-agent", "Yahoo AppID: "+c.ClientID)
 
@@ -43,11 +44,11 @@ func (c *Client) Get(req *Request) (*Response, error) {
 	}
 	hresp, err := client.Do(hreq)
 	if err != nil {
-		return nil, fmt.Errorf("error while sending a HTTP request: %s", err)
+		return nil, errors.Wrapf(err, "error while sending a HTTP request")
 	}
 	defer hresp.Body.Close()
 	if hresp.StatusCode != 200 {
-		return nil, fmt.Errorf("server returned status code %d", hresp.StatusCode)
+		return nil, errors.Errorf("server returned status code %d", hresp.StatusCode)
 	}
 
 	var resp Response
@@ -57,7 +58,7 @@ func (c *Client) Get(req *Request) (*Response, error) {
 	}
 	d := json.NewDecoder(hresp.Body)
 	if err := d.Decode(&resp.Body); err != nil {
-		return nil, fmt.Errorf("error while decoding JSON: %s", err)
+		return nil, errors.Wrapf(err, "error while decoding JSON")
 	}
 	return &resp, nil
 }

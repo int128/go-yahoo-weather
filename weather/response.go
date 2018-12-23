@@ -1,7 +1,7 @@
 package weather
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 	"strconv"
 	"strings"
 	"time"
@@ -51,7 +51,7 @@ type CoordinatesString string
 func (s CoordinatesString) Parse() (Coordinates, error) {
 	p := strings.SplitN(string(s), ",", 2)
 	if len(p) != 2 {
-		return Coordinates{}, fmt.Errorf("wants comma separated 2 values but %d", len(p))
+		return Coordinates{}, errors.Errorf("invalid coordinates string: %s", s)
 	}
 	lat, lon := p[1], p[0]
 
@@ -59,11 +59,11 @@ func (s CoordinatesString) Parse() (Coordinates, error) {
 	var err error
 	c.Latitude, err = strconv.ParseFloat(lat, 64)
 	if err != nil {
-		return Coordinates{}, fmt.Errorf("error while parsing latitude %s: %s", lat, err)
+		return Coordinates{}, errors.Wrapf(err, "error while parsing latitude %s", lat)
 	}
 	c.Longitude, err = strconv.ParseFloat(lon, 64)
 	if err != nil {
-		return Coordinates{}, fmt.Errorf("error while parsing longitude %s: %s", lon, err)
+		return Coordinates{}, errors.Wrapf(err, "error while parsing longitude %s", lon)
 	}
 	return c, nil
 }
