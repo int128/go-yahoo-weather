@@ -1,10 +1,12 @@
 package weather
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Response represents a response from Weather API.
@@ -42,6 +44,38 @@ type ResponseBody struct {
 			} `json:"WeatherList"`
 		} `json:"Property"`
 	} `json:"Feature"`
+	Error errorResponse `json:"Error"`
+}
+
+type errorResponse struct {
+	CodeValue    int    `json:"Code" xml:"Code"`
+	MessageValue string `json:"Message" xml:"Message"`
+}
+
+func (e *errorResponse) Error() string {
+	return fmt.Sprintf("error from Weather API: code=%d, message=%s", e.Code(), e.Message())
+}
+
+func (e *errorResponse) Code() int {
+	return e.CodeValue
+}
+
+func (e *errorResponse) Message() string {
+	return strings.TrimSpace(e.MessageValue)
+}
+
+// ErrorResponse provides details of error response.
+type ErrorResponse interface {
+	Code() int       // Error code in response body or status code, such as 400, 401 or 403
+	Message() string // Error message
+}
+
+// GetErrorResponse returns ErrorResponse if API returned an error response.
+func GetErrorResponse(err error) ErrorResponse {
+	if r, ok := errors.Cause(err).(ErrorResponse); ok {
+		return r
+	}
+	return nil
 }
 
 // CoordinatesString represents a coordinates in API specific format.

@@ -5,6 +5,9 @@ package weather
 
 import (
 	"encoding/json"
+	"encoding/xml"
+	"io/ioutil"
+	"mime"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -47,18 +50,44 @@ func (c *Client) Get(req *Request) (*Response, error) {
 		return nil, errors.Wrapf(err, "error while sending a HTTP request")
 	}
 	defer hresp.Body.Close()
-	if hresp.StatusCode != 200 {
-		return nil, errors.Errorf("server returned status code %d", hresp.StatusCode)
-	}
 
-	var resp Response
-	expires, err := http.ParseTime(hresp.Header.Get("expires"))
-	if err == nil {
-		resp.Expires = expires
+	contentType := hresp.Header.Get("content-type")
+	mediaType, _, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid content-type header")
 	}
-	d := json.NewDecoder(hresp.Body)
-	if err := d.Decode(&resp.Body); err != nil {
-		return nil, errors.Wrapf(err, "error while decoding JSON")
+	switch mediaType {
+	case "application/json":
+		var resp Response
+		expires, err := http.ParseTime(hresp.Header.Get("expires"))
+		if err == nil {
+			resp.Expires = expires
+		}
+		d := json.NewDecoder(hresp.Body)
+		if err := d.Decode(&resp.Body); err != nil {
+			return nil, errors.Wrapf(err, "error while decoding JSON response")
+		}
+		if errResp := resp.Body.Error; errResp.Code() >= 300 || hresp.StatusCode >= 300 {
+			if errResp.Code() == 0 {
+				errResp.CodeValue = hresp.StatusCode
+			}
+			return nil, errors.WithStack(&resp.Body.Error)
+		}
+		return &resp, nil
+
+	case "application/xml":
+		var errResp errorResponse
+		d := xml.NewDecoder(hresp.Body)
+		if err := d.Decode(&errResp); err != nil {
+			return nil, errors.Wrapf(err, "error while decoding XML response")
+		}
+		if errResp.Code() == 0 {
+			errResp.CodeValue = hresp.StatusCode
+		}
+		return nil, &errResp
+
+	default:
+		b, _ := ioutil.ReadAll(hresp.Body)
+		return nil, errors.Errorf("received unknown content-type %s (body=%s)", mediaType, string(b))
 	}
-	return &resp, nil
 }
