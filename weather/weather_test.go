@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
 	"github.com/int128/go-yahoo-weather/weather"
 	"github.com/int128/go-yahoo-weather/weather/testdata"
 )
@@ -34,7 +34,7 @@ func TestParse(t *testing.T) {
 	if err := json.Unmarshal([]byte(testdata.WeatherResponseJSON), &resp.Body); err != nil {
 		t.Fatalf("error while decoding JSON: %s", err)
 	}
-	weathers, err := weather.Parse(&resp)
+	got, err := weather.Parse(&resp)
 	if err != nil {
 		t.Fatalf("Parse returned error: %s", err)
 	}
@@ -63,7 +63,7 @@ func TestParse(t *testing.T) {
 			},
 		},
 	}
-	if diff := deep.Equal(want, weathers); diff != nil {
-		t.Error(diff)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
 	}
 }
