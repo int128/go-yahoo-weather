@@ -113,7 +113,7 @@ func TestClient_Get_Error400(t *testing.T) {
 	t.Log(err)
 	errResp := weather.GetErrorResponse(err)
 	if errResp == nil {
-		t.Errorf("errResp wants non-nil but nil")
+		t.Fatalf("errResp wants non-nil but nil")
 	}
 	if errResp.Code() != 400 {
 		t.Errorf("Code wants 400 but %d", errResp.Code())
@@ -149,7 +149,7 @@ func TestClient_Get_Error401(t *testing.T) {
 	t.Log(err)
 	errResp := weather.GetErrorResponse(err)
 	if errResp == nil {
-		t.Errorf("errResp wants non-nil but nil")
+		t.Fatalf("errResp wants non-nil but nil")
 	}
 	if errResp.Code() != 401 {
 		t.Errorf("Code wants 401 but %d", errResp.Code())
@@ -185,7 +185,7 @@ func TestClient_Get_Error403(t *testing.T) {
 	t.Log(err)
 	errResp := weather.GetErrorResponse(err)
 	if errResp == nil {
-		t.Errorf("errResp wants non-nil but nil")
+		t.Fatalf("errResp wants non-nil but nil")
 	}
 	if errResp.Code() != 403 {
 		t.Errorf("Code wants 403 but %d", errResp.Code())
