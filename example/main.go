@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/int128/go-yahoo-weather/weather"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"os"
+
+	"github.com/int128/go-yahoo-weather/weather"
 )
 
 func main() {

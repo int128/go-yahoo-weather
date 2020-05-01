@@ -1,12 +1,11 @@
 package weather
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Response represents a response from Weather API.
@@ -72,8 +71,9 @@ type ErrorResponse interface {
 
 // GetErrorResponse returns ErrorResponse if API returned an error response.
 func GetErrorResponse(err error) ErrorResponse {
-	if r, ok := errors.Cause(err).(ErrorResponse); ok {
-		return r
+	var v ErrorResponse
+	if errors.As(err, &v) {
+		return v
 	}
 	return nil
 }
@@ -85,7 +85,7 @@ type CoordinatesString string
 func (s CoordinatesString) Parse() (Coordinates, error) {
 	p := strings.SplitN(string(s), ",", 2)
 	if len(p) != 2 {
-		return Coordinates{}, errors.Errorf("invalid coordinates string: %s", s)
+		return Coordinates{}, fmt.Errorf("invalid coordinates string: %s", s)
 	}
 	lat, lon := p[1], p[0]
 
@@ -93,11 +93,11 @@ func (s CoordinatesString) Parse() (Coordinates, error) {
 	var err error
 	c.Latitude, err = strconv.ParseFloat(lat, 64)
 	if err != nil {
-		return Coordinates{}, errors.Wrapf(err, "error while parsing latitude %s", lat)
+		return Coordinates{}, fmt.Errorf("error while parsing latitude %s: %w", lat, err)
 	}
 	c.Longitude, err = strconv.ParseFloat(lon, 64)
 	if err != nil {
-		return Coordinates{}, errors.Wrapf(err, "error while parsing longitude %s", lon)
+		return Coordinates{}, fmt.Errorf("error while parsing longitude %s: %w", lon, err)
 	}
 	return c, nil
 }

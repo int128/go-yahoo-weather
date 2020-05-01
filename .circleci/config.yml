@@ -2,11 +2,9 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.11.1
+      - image: cimg/go:1.14
     steps:
       - checkout
-      - run: go get -u golang.org/x/lint/golint
-      - run: golint
       - run: go vet ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
       - run: bash <(curl -s https://codecov.io/bash)

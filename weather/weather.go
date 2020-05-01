@@ -1,9 +1,8 @@
 package weather
 
 import (
+	"fmt"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Weather represents weather at the coordinates.
@@ -37,7 +36,7 @@ func Parse(resp *Response) ([]Weather, error) {
 
 		weather.Coordinates, err = respFeature.Geometry.Coordinates.Parse()
 		if err != nil {
-			return nil, errors.Wrapf(err, "invalid coordinates")
+			return nil, fmt.Errorf("invalid coordinates: %w", err)
 		}
 
 		for _, respWeather := range respFeature.Property.WeatherList.Weather {
@@ -45,14 +44,14 @@ func Parse(resp *Response) ([]Weather, error) {
 			event.Rainfall = respWeather.Rainfall
 			event.Time, err = respWeather.Date.Parse()
 			if err != nil {
-				return nil, errors.Wrapf(err, "invalid date")
+				return nil, fmt.Errorf("invalid date: %w", err)
 			}
 			switch respWeather.Type {
 			case "observation":
 			case "forecast":
 				event.Forecast = true
 			default:
-				return nil, errors.Errorf("unknown weather type: %s", respWeather.Type)
+				return nil, fmt.Errorf("unknown weather type: %s", respWeather.Type)
 			}
 
 			weather.Events = append(weather.Events, event)
